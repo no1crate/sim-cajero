@@ -35,7 +35,7 @@ while loged:
                 removeCash = removeCash.replace('-', '')
                 removeCash = int(removeCash)
                 if(removeCash > cash):
-                    gui.alert("Pon un numero menor o igual a " + cash)
+                    gui.alert("Pon un numero menor o igual a " + str(cash))
                 else:
                     transferPassword = gui.password("Ingresa tu contraseña para confirmar:")
                     if(db.verifyContent(username, transferPassword, "passwords")):
@@ -48,7 +48,7 @@ while loged:
                             db.modifyContent(userAddMoney, db.getElement(userAddMoney, "history") + "Recibido " + str(removeCash) + " de " + username, "history")
                         else:
                             db.modifyContent(userAddMoney, db.getElement(userAddMoney, "history") + "\nRecibido " + str(removeCash) + " de " + username, "history")
-                        if(len(db.getElement(username, "history")) != 0):
+                        if(len(db.getElement(username, "history")) == 0):
                             db.modifyContent(username, db.getElement(username, "history") + "Enviado " + str(removeCash) + " a " + userAddMoney, "history")
                         else:
                             db.modifyContent(username, db.getElement(username, "history") + "\nEnviado " + str(removeCash) + " a " + userAddMoney, "history")
