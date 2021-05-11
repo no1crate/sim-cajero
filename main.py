@@ -13,8 +13,9 @@ if(rl == "Registrarme"):
         db.addElement(username, username, "users")
         db.addElement(username, password, "passwords")
         db.addElement(username, "0", "cash")
+        db.addElement(username, "", "history")
         gui.alert("Registrad@ correctamente!")
-        logrd = True
+        loged = True
 elif(rl == "Iniciar sesion"):
     username = gui.prompt("¿Cual es tu nombre de usuario?")
     if(db.verifyElement(username, "users")):
@@ -25,20 +26,36 @@ elif(rl == "Iniciar sesion"):
 
 while loged:
     cash = int(db.getElement(username, "cash"))
-    a = gui.confirm("$" + str(cash) + "\n¿Que quieres hacer " + username + "?", buttons=["Hacer una transferencia", "Cerrar sesion"])
+    a = gui.confirm("$" + str(cash) + "\n¿Que quieres hacer " + username + "?", buttons=["Hacer una transferencia", "Movimientos", "Cerrar sesion"])
     if(a == "Hacer una transferencia"):
         userAddMoney = gui.prompt("¿Cual es el nombre de usuario de la persona?")
-        if(db.verifyElement(userAddMoney, "users")):
-            removeCash = int(gui.prompt("¿Cuanto quieres transferir?"))
-            if(removeCash > cash):
-                gui.alert("Pon un numero menor o igual a " + cash)
-            else:
-                cash -= removeCash
-                db.modifyContent(username, str(cash), "cash")
-                cashFromUser = int(db.getElement(userAddMoney, "cash"))
-                cashFromUser += removeCash
-                db.modifyContent(userAddMoney, str(cashFromUser), "cash")
-                gui.alert("Transferencia completada con exito!")
+        if(userAddMoney != username):
+            if(db.verifyElement(userAddMoney, "users")):
+                removeCash = int(gui.prompt("¿Cuanto quieres transferir?"))
+                if(removeCash > cash):
+                    gui.alert("Pon un numero menor o igual a " + cash)
+                else:
+                    transferPassword = gui.password("Ingresa tu contraseña para confirmar:")
+                    if(db.verifyContent(username, transferPassword, "passwords")):
+                        cash -= removeCash
+                        db.modifyContent(username, str(cash), "cash")
+                        cashFromUser = int(db.getElement(userAddMoney, "cash"))
+                        cashFromUser += removeCash
+                        db.modifyContent(userAddMoney, str(cashFromUser), "cash")
+                        if(len(db.getElement(userAddMoney, "history")) != 0):
+                            db.modifyContent(userAddMoney, db.getElement(userAddMoney, "history") + "Recibido " + str(removeCash) + " de " + username, "history")
+                        else:
+                            db.modifyContent(userAddMoney, db.getElement(userAddMoney, "history") + "\nRecibido " + str(removeCash) + " de " + username, "history")
+                        if(len(db.getElement(username, "history")) != 0):
+                            db.modifyContent(username, db.getElement(username, "history") + "Enviado " + str(removeCash) + " a " + userAddMoney, "history")
+                        else:
+                            db.modifyContent(username, db.getElement(username, "history") + "\nEnviado " + str(removeCash) + " a " + userAddMoney, "history")
+                        gui.alert("Transferencia completada con exito!")
+    elif(a == "Movimientos"):
+        if(len(db.getElement(username, "history")) == 0):
+            gui.alert("No tienes movimientos!")
+        else:
+            gui.alert(db.getElement(username, "history"))
     elif(a == "Cerrar sesion"):
         loged = False
         gui.alert("Adios " + username + "!")
