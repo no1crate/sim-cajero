@@ -31,7 +31,9 @@ while loged:
         userAddMoney = gui.prompt("¿Cual es el nombre de usuario de la persona?")
         if(userAddMoney != username):
             if(db.verifyElement(userAddMoney, "users")):
-                removeCash = int(gui.prompt("¿Cuanto quieres transferir?"))
+                removeCash = gui.prompt("¿Cuanto quieres transferir?")
+                removeCash = removeCash.replace('-', '')
+                removeCash = int(removeCash)
                 if(removeCash > cash):
                     gui.alert("Pon un numero menor o igual a " + cash)
                 else:
